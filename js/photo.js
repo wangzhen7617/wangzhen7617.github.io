@@ -18,8 +18,8 @@
                 var html, li = "";
                 for (var i = begin; i < end && i < data.length; i++) {
                     li += '<li><div class="img-box">' +
-                        '<a class="img-bg" rel="example_group" href="https://github.com/wangzhen7617/wangzhen7617.github.io/photo/' + data[i] + '?raw=true"></a>' +
-                        '<img lazy-src="https://github.com/wangzhen7617/wangzhen7617.github.io/photo/' + data[i] + '?raw=true" />' +
+                        '<a class="img-bg" rel="example_group" href="https://github.com/wangzhen7617/wangzhen7617.github.io/tree/master/photo/photos/' + data[i] + '?raw=true"></a>' +
+                        '<img lazy-src="https://github.com/wangzhen7617/wangzhen7617.github.io/tree/master/photo/photos/' + data[i] + '?raw=true" />' +
                         '</li>';
                 }
 
