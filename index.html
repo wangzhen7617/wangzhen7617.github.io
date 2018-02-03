@@ -163,6 +163,83 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-require&amp;exports" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/02/03/require&exports/">nodejs开发——require与exports的使用</a>
+    </h1>
+  
+
+        
+        <a href="/2018/02/03/require&exports/" class="archive-article-date">
+  	<time datetime="2018-02-03T02:55:12.252Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <script src="/assets/js/APlayer.min.js"> </script><p>nodejs中模块化编程最主要的一个特征就是常常可以在很多js文件看到require()，也就是引入其他的js文件，非常类似与其他语言中的import或include。同时如果想要require(‘A’)，那么在A文件中必须要使用exports这个关键字表明要导出什么变量或函数。</p>
+<p>先来看一个非常简单的使用require和exports的例子，新建一个app.js文件，代码实现如下： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//引入同一目录下的name.js  </span><br><span class="line">var name = require(&apos;./name&apos;);  </span><br><span class="line">  </span><br><span class="line">//使用name.js中的变量  </span><br><span class="line">console.log(name.name1);  </span><br><span class="line">//调用name.js中的函数  </span><br><span class="line">name.getName();</span><br></pre></td></tr></table></figure>
+<p>同一目录下创建name.js文件，代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//变量  </span><br><span class="line">var name1 = &quot;Jack&quot;;  </span><br><span class="line">  </span><br><span class="line">//函数  </span><br><span class="line">function getName() &#123;  </span><br><span class="line">    console.log(&quot;Mary&quot;);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">//分别导出变量和函数  </span><br><span class="line">module.exports.name1 = name1;  </span><br><span class="line">module.exports.getName = getName;</span><br></pre></td></tr></table></figure>
+<p>运行app.js脚本，打印结果可以看到，一个js文件可以成功访问另一个js文件的变量和函数。其实当使用require时，可以理解为首先去执行了需要载入的js文件，所以，被载入文件的代码会首先执行一遍，现把name.js修改如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//变量  </span><br><span class="line">var name1 = &quot;Jack&quot;;  </span><br><span class="line">  </span><br><span class="line">//函数  </span><br><span class="line">function getName() &#123;  </span><br><span class="line">    console.log(&quot;Mary&quot;);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">//如果require该文件，则会打印  </span><br><span class="line">console.log(&quot;Running name.js&quot;);  </span><br><span class="line">  </span><br><span class="line">//分别导出变量和函数  </span><br><span class="line">module.exports.name1 = name1;  </span><br><span class="line">module.exports.getName = getName;</span><br></pre></td></tr></table></figure>
+<p>执行app.js脚本后，控制台中打印结果如下，可见整个name.js都被执行了。</p>
+<p>上面的name.js还可以继续优化，如果要导出的变量或函数较多，则上面的代码稍显冗余，先把name.js修改如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">var name1 = &quot;Jack&quot;;  </span><br><span class="line">  </span><br><span class="line">//函数  </span><br><span class="line">function getName() &#123;  </span><br><span class="line">    console.log(&quot;Mary&quot;);  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">//如果require该文件，则会打印  </span><br><span class="line">console.log(&quot;Running name.js&quot;);  </span><br><span class="line">  </span><br><span class="line">//分别导出变量和函数  </span><br><span class="line">// module.exports.name1 = name1;  </span><br><span class="line">// module.exports.getName = getName;  </span><br><span class="line">  </span><br><span class="line">//一种更优雅的导出方式，功能同上，更为简洁  </span><br><span class="line">module.exports = &#123;  </span><br><span class="line">    name1: name1,  </span><br><span class="line">    getName: getName  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>最后的运行结构与上面相同。</p>
+<p>其实上面的代码还可以继续优化，函数的导出可以更加简洁，name.js修改如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//变量  </span><br><span class="line">var name1 = &quot;Jack&quot;;  </span><br><span class="line">  </span><br><span class="line">//函数  </span><br><span class="line">// function getName() &#123;  </span><br><span class="line">//     console.log(&quot;Mary&quot;);  </span><br><span class="line">// &#125;  </span><br><span class="line">  </span><br><span class="line">//如果require该文件，则会打印  </span><br><span class="line">console.log(&quot;Running name.js&quot;);  </span><br><span class="line">  </span><br><span class="line">//分别导出变量和函数  </span><br><span class="line">// module.exports.name1 = name1;  </span><br><span class="line">// module.exports.getName = getName;  </span><br><span class="line">  </span><br><span class="line">//一种更优雅的导出方式，功能同上，更为简洁，可以把所有的变量写入  </span><br><span class="line">module.exports = &#123;  </span><br><span class="line">    name1: name1  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">//对于函数，则有更方便的导出方式,函数推荐使用这种方式，定义的时候同时导出  </span><br><span class="line">module.exports.getName = function () &#123;  </span><br><span class="line">    console.log(&quot;Mary&quot;);  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>最后我们来区分一下module.exports和exports的区别。我们在看很多nodejs代码的时候，常常看到使用这两种方式。其实module.exports和exports的区别就是var a={}; var b=a; 中a和的区别。exports指向的只是一个引用。改变exports的指向后所添加的exports.xxx都是无效的。因为require返回的只是module.exports.所以不能在使用了exports.xxx之后，改变module.exports的指向。因为exports.xxx添加的属性和方法并不存在与module.exports所指向的新对象中。</p>
+<p>个人建议，可以全部使用module.exports来应对所有的情况，并尽量减少犯错的机会。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/02/03/require&exports/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-搭建私人博客" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
